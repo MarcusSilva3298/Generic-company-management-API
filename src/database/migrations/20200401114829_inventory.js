@@ -1,5 +1,6 @@
+
 exports.up = function(knex) {
-    return knex.schema.createTable('products', function(table){
+    return knex.schema.createTable('inventory', function(table){
         table.string('productID').primary();
         table.string('name').notNullable();
         table.string('mainCategory').notNullable();
@@ -7,12 +8,11 @@ exports.up = function(knex) {
         table.integer('amount').notNullable();
         table.decimal('price').notNullable();
         table.decimal('cost').notNullable();
-        table.string('sendComapny').notNullable();
-        table.date('arrival').notNullable();
+        table.string('sendCompany').notNullable();
+        table.string('arrival').notNullable();
   })
 };
 
 exports.down = function(knex) {
-    return knex.schema.dropTable('products');
+    return knex.schema.dropTable('inventory');
 };
-  
