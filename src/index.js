@@ -12,4 +12,4 @@ app.use(express.json())
 app.use(routes)
 
 //"Setagem" de porta localhost
-app.listen(3333);
+app.listen(8000);
