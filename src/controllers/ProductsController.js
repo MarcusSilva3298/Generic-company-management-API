@@ -5,7 +5,7 @@ module.exports = {
     //List all products
     async index(require, response){
         const { page = 1 } = require.query;
-        const { filters } = require.params;
+        //const { filters } = require.params;
 
         const products = await connection('inventory')
             .limit(10).offset((page - 1 ) * 10)
