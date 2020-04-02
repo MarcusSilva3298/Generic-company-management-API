@@ -42,7 +42,7 @@ module.exports = {
             .where('productID', id).select('*').first();
 
         if ( product === undefined ){
-            return response.status(404).json({ error: `ProductID: ${ id } not found!` });
+            return response.status(404).json({ error: `ProductID ${ id } not found!` });
         }
         
         return response.json(product);
@@ -56,14 +56,14 @@ module.exports = {
             price, cost, sendCompany, arrival
         } = require.body;
 
-        const newProduct = await connection('inventory')
+        const product = await connection('inventory')
             .where('productID', id).first().update({
                 name, mainCategory, subCategory, amount, 
                 price, cost, sendCompany, arrival,
             }).select('productID');
 
-        if ( newProduct ===  undefined ){
-            return response.status(404).json({ error: `ProductID: ${ id } not found!` });
+        if ( product ===  undefined ){
+            return response.status(404).json({ error: `ProductID ${ id } not found!` });
         }
 
         return response.status(201).json(`Product ${ id } updated!`);
@@ -77,7 +77,7 @@ module.exports = {
             .where('productID', id).first().select('productID');
 
         if ( product === undefined ){
-            return response.status(404).json({ error: `ProductID: ${ id } not found!` });
+            return response.status(404).json({ error: `ProductID ${ id } not found!` });
         }
 
         await connection('inventory')

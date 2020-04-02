@@ -23,5 +23,12 @@ routes.route('/employees')
 
     .post(EmployeesController.create)
 
+routes.route('/employees/:id')
+    .get(EmployeesController.read)
+
+    .put(EmployeesController.update)
+
+    .delete(EmployeesController.delete)
+
 
 module.exports = routes;
