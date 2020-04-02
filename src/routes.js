@@ -7,4 +7,11 @@ routes.route('/inventory')
 
     .post(ProductsController.create)
 
+routes.route('/inventory/:id')
+    .get(ProductsController.read)
+
+    .put(ProductsController.update)
+
+    .delete(ProductsController.delete)
+
 module.exports = routes;
