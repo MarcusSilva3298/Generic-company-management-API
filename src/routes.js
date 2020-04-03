@@ -3,6 +3,7 @@ const routes = express.Router();
 
 //Inventory routes
 const ProductsController = require('./controllers/ProductsController');
+
 routes.route('/inventory')
     .get(ProductsController.index)
 
@@ -18,6 +19,7 @@ routes.route('/inventory/:id')
 
 //Employees Routes
 const EmployeesController = require('./controllers/EmployeesController');
+
 routes.route('/employees')
     .get(EmployeesController.index)
 
@@ -30,5 +32,20 @@ routes.route('/employees/:id')
 
     .delete(EmployeesController.delete)
 
+
+//Projects Routes
+const ProjectsController = require('./controllers/ProjectsController');
+
+routes.route('/projects')
+    .get(ProjectsController.index)
+
+    .post(ProjectsController.create)
+
+routes.route('/projects/:id')
+    .get(ProjectsController.read)
+
+    .put(ProjectsController.update)
+
+    .delete(ProjectsController.delete)
 
 module.exports = routes;

@@ -8,7 +8,7 @@ module.exports = {
         
         const employees = await connection('employees')
             .limit(10).offset((page - 1 ) * 10 )
-            .select('name', 'job', 'departament')
+            .select('name', 'job', 'department', 'employeeID');
 
         const [ count ] = await connection('employees').count();
 
@@ -19,12 +19,12 @@ module.exports = {
 
     //Create new employee
     async create(require, response){
-        const { name, job, wage, departament } = require.body;
+        const { name, job, wage, department } = require.body;
 
         const employeeID = crypto.randomBytes(4).toString('HEX');
 
         await connection('employees').insert({
-            name, job, wage, departament, employeeID
+            name, job, wage, department, employeeID
         });
 
         return response.json({ 'Employee created! ID': employeeID})
