@@ -48,4 +48,17 @@ routes.route('/projects/:id')
 
     .delete(ProjectsController.delete)
 
+//Sales Routes
+const SalesController = require('./controllers/SalesController');
+
+routes.route('/sales')
+    .get(SalesController.index)
+
+    .post(SalesController.create)
+
+routes.route('/sales/:id')
+    .get(SalesController.read)
+
+    .delete(SalesController.delete)
+
 module.exports = routes;

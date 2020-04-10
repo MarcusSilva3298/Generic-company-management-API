@@ -3,9 +3,9 @@ const crypto = require('crypto');
 
 module.exports = {
     //List all products
-    async index(require, response){
-        const { page = 1 } = require.query;
-        //const { filters } = require.params;
+    async index(request, response){
+        const { page = 1 } = request.query;
+        //const { filters } = request.params;
 
         const products = await connection('inventory')
             .limit(10).offset((page - 1 ) * 10)
@@ -13,16 +13,16 @@ module.exports = {
 
         const [ count ] = await connection('inventory').count();
 
-        response.header('X-Total-Products', count['count(*)'])
+        response.header('X-Total-Products', count['count(*)']);
 
         return response.json(products);
     },
 
     //Create product
-    async create(require, response){
+    async create(request, response){
         const { name, mainCategory, subCategory, amount, 
             price, cost, sendCompany, arrival
-        } = require.body;
+        } = request.body;
 
         const productID = crypto.randomBytes(4).toString('HEX');
 
@@ -35,8 +35,8 @@ module.exports = {
     },
 
     //Read one specific product
-    async read(require, response){
-        const { id } = require.params;
+    async read(request, response){
+        const { id } = request.params;
 
         const product = await connection('inventory')
             .where('productID', id).select('*').first();
@@ -49,12 +49,12 @@ module.exports = {
     },
 
     //Update one product
-    async update(require, response){
-        const { id } = require.params;
+    async update(request, response){
+        const { id } = request.params;
 
         const { name, mainCategory, subCategory, amount, 
             price, cost, sendCompany, arrival
-        } = require.body;
+        } = request.body;
 
         const product = await connection('inventory')
             .where('productID', id).first().update({
@@ -70,8 +70,8 @@ module.exports = {
     },
 
     //Delete one product
-    async delete(require, response){
-        const { id } = require.params;
+    async delete(request, response){
+        const { id } = request.params;
 
         const product = await connection('inventory')
             .where('productID', id).first().select('productID');
@@ -83,6 +83,6 @@ module.exports = {
         await connection('inventory')
             .where('productID', id).delete()
 
-        return response.status(204).json(`ProductID: ${id} deleted`);
+        return response.status(204);
     }
 }

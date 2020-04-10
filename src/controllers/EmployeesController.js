@@ -3,8 +3,8 @@ const crypto = require('crypto');
 
 module.exports = {
     //List all employees
-    async index(require, response){
-        const { page = 1 } = require.query;
+    async index(request, response){
+        const { page = 1 } = request.query;
         
         const employees = await connection('employees')
             .limit(10).offset((page - 1 ) * 10 )
@@ -18,8 +18,8 @@ module.exports = {
     },
 
     //Create new employee
-    async create(require, response){
-        const { name, job, wage, department } = require.body;
+    async create(request, response){
+        const { name, job, wage, department } = request.body;
 
         const employeeID = crypto.randomBytes(4).toString('HEX');
 
@@ -31,8 +31,8 @@ module.exports = {
     },
 
     //Read one employee
-    async read(require, response){
-        const { id } = require.params;
+    async read(request, response){
+        const { id } = request.params;
         
         const employee = await connection('employees')
             .where('employeeID', id).select('*').first()
@@ -45,10 +45,10 @@ module.exports = {
     },
 
     //Upadte one employee
-    async update(require, response){
-        const { id } = require.params;
+    async update(request, response){
+        const { id } = request.params;
 
-        const { name, job, wage, dapartment } = require.body;
+        const { name, job, wage, dapartment } = request.body;
 
         const employee = await connection('employees')
             .where('employeeID', id).first().update({
@@ -63,8 +63,8 @@ module.exports = {
     },
 
     //Delete one employee
-    async delete(require, response){
-        const { id } = require.params;
+    async delete(request, response){
+        const { id } = request.params;
 
         const employee = await connection('employees')
             .where('employeeID', id).first().select('employeeID');
@@ -76,6 +76,6 @@ module.exports = {
         await connection('employees')
             .where('employeeID', id).delete();
 
-        return response.status(204).json(`EmployeeID: ${ id } deleted`);
+        return response.status(204);
     },
 }

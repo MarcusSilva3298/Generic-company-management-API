@@ -3,17 +3,24 @@ const crypto = require('crypto');
 
 module.exports = {
     //List all projects
-    async index(require, response){
+    async index(request, response){
+        const { page = 1 } = request.query;
+
         const projects = await connection('projects')
+            .limite(10).offset(( page - 1) * 10)
             .select('name', 'projectID', 'profit', 'deadlineDate');
+
+        const [ count ] = await connection('inventory').count();
+
+        response.header('X-Total-Projects', count['count(*)']);
 
         return response.json(projects);
     },
 
     //Create new project
-    async create(require, response){      
+    async create(request, response){      
         const { name, description, startDate, deadlineDate, clients,
-            price, costs } = require.body;
+            price, costs } = request.body;
 
         const projectID = crypto.randomBytes(4).toString('HEX');
         const profit = price - costs;
@@ -27,8 +34,8 @@ module.exports = {
     },
 
     //Read one project
-    async read(require, response){
-        const { id } = require.params;
+    async read(request, response){
+        const { id } = request.params;
 
         const project = await connection('projects')
             .where('projectID', id).select('*').first();
@@ -41,11 +48,11 @@ module.exports = {
     },
 
     //Update one project
-    async update(require, response){
-        const { id } = require.params;
+    async update(request, response){
+        const { id } = request.params;
 
         const { name, description, startDate, deadlineDate, clients,
-            price, costs } = require.body;
+            price, costs } = request.body;
 
         const profit = price - costs;
 
@@ -62,8 +69,8 @@ module.exports = {
         return response.status(201).json(`Product ${ id } updated!`)
     },
 
-    async delete(require, response){
-        const { id } = require.params;
+    async delete(request, response){
+        const { id } = request.params;
 
         const project = await connection('projects')
             .where('projectID', id).first();
@@ -75,6 +82,6 @@ module.exports = {
         await connection('projects')
             .where('projectID', id).delete()
 
-        return response.status(201).json(`Project ${ id } deleted`);
+        return response.status(204);
     }
 }
