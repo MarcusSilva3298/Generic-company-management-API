@@ -61,4 +61,9 @@ routes.route('/sales/:id')
 
     .delete(SalesController.delete)
 
+//Financials Routes
+const FinancialsController = require('./controllers/FinancialsController');
+routes.route('/financials')
+    .get(FinancialsController.index)
+
 module.exports = routes;
