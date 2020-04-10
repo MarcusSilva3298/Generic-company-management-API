@@ -40,7 +40,7 @@ module.exports = {
             .where('productID', productID).select('price').first();
         const productUnitValue = price.price;
 
-        const income = productUnitValue * amount * ( discount / 100) ;
+        const income = productUnitValue * amount * ( (100 - discount) / 100 ) ;
 
         await connection('sales').insert({
             amount, discount, client, productID, productName, income

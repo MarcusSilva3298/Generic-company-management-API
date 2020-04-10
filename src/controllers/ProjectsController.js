@@ -7,7 +7,7 @@ module.exports = {
         const { page = 1 } = request.query;
 
         const projects = await connection('projects')
-            .limite(10).offset(( page - 1) * 10)
+            .limit(10).offset(( page - 1) * 10)
             .select('name', 'projectID', 'profit', 'deadlineDate');
 
         const [ count ] = await connection('inventory').count();
