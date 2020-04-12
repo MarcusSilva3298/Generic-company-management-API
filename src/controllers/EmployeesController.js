@@ -7,8 +7,9 @@ module.exports = {
         const { page = 1 } = request.query;
         
         const employees = await connection('employees')
-            .limit(10).offset((page - 1 ) * 10 )
-            .select('name', 'job', 'department', 'employeeID');
+            .limit(5).offset((page - 1 ) * 5 )
+            .select('name', 'job', 'department', 'employeeID')
+            .orderBy('name', 'department');
 
         const [ count ] = await connection('employees').count();
 
@@ -23,9 +24,10 @@ module.exports = {
 
         const employeeID = crypto.randomBytes(4).toString('HEX');
 
-        await connection('employees').insert({
-            name, job, wage, department, employeeID
-        });
+        await connection('employees')
+            .insert({
+                name, job, wage, department, employeeID
+            });
 
         return response.json({ 'Employee created! ID': employeeID})
     },
@@ -35,7 +37,9 @@ module.exports = {
         const { id } = request.params;
         
         const employee = await connection('employees')
-            .where('employeeID', id).select('*').first()
+            .where('employeeID', id)
+            .select('*')
+            .first();
 
         if ( employee === undefined ){
             return response.status(404).json({ error: `EmployeeID ${ id } not found!` })
@@ -48,12 +52,15 @@ module.exports = {
     async update(request, response){
         const { id } = request.params;
 
-        const { name, job, wage, dapartment } = request.body;
+        const { name, job, wage, department } = request.body;
 
         const employee = await connection('employees')
-            .where('employeeID', id).first().update({
-                name, job, wage, dapartment
-            }).select('employeeID');
+            .where('employeeID', id)
+            .select('employeeID')
+            .first()
+            .update({
+                name, job, wage, department
+            });
 
         if ( employee === undefined ){
             return response.json(404).json({ error: `EmployeeID ${ id } not found!` })
@@ -67,14 +74,17 @@ module.exports = {
         const { id } = request.params;
 
         const employee = await connection('employees')
-            .where('employeeID', id).first().select('employeeID');
+            .where('employeeID', id)
+            .select('employeeID')
+            .first();
 
         if ( employee === undefined ){
             return response.status(404).json({ error: `EmployeeID ${ id } not found!` });
         }
 
         await connection('employees')
-            .where('employeeID', id).delete();
+            .where('employeeID', id)
+            .delete();
 
         return response.status(204);
     },
