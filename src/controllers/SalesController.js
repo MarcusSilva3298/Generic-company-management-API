@@ -7,7 +7,7 @@ module.exports = {
 
         const sales = await connection('sales')
             .limit(10).offset((page - 1 ) * 10)
-            .select('productID', 'productName','amount','income');
+            .select('saleId', 'productID', 'productName','amount','income', 'date');
         
         const [ count ] = await connection('sales').count();
 
@@ -18,7 +18,13 @@ module.exports = {
 
     //Create new sale
     async create(request, response){
-        const { amount, discount, client, productID } = request.body;
+        const { amount, discount, client, productID, selldate } = request.body;
+
+        if ( selldate === undefined ){
+            var date = new Date();
+        }else{
+            var date = new Date(selldate)
+        }
 
         const amnt = await connection('inventory')
             .where('productID', productID).select('amount').first();
@@ -43,7 +49,7 @@ module.exports = {
         const income = productUnitValue * amount * ( (100 - discount) / 100 ) ;
 
         await connection('sales').insert({
-            amount, discount, client, productID, productName, income
+            amount, discount, client, productID, productName, income, date: date.toLocaleString()
         })
 
         
@@ -53,6 +59,7 @@ module.exports = {
         return response.status(201).json(`Sold ${ amount } of ${ productName } by ${ income }`)
     },
 
+    //Read one sale
     async read(request, response){
         const { id } = request.params;
 

@@ -1,4 +1,3 @@
-
 exports.up = function(knex) {
     return knex.schema.createTable('sales', function(table){
         table.increments('saleID');
@@ -8,7 +7,7 @@ exports.up = function(knex) {
         table.decimal('income').notNullable();
         table.decimal('discount').notNullable();
         table.string('client');
-        table.date('date').defaultTo(knex.fn.now());
+        table.date('date').notNullable();
 
         table.foreign('productID').references('productID').inTable('inventory');
         table.foreign('productName').references('name').inTable('inventory');
