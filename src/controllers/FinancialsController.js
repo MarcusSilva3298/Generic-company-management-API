@@ -44,16 +44,14 @@ module.exports = {
         const allProducts = await connection('inventory')
             .limit(5).offset((productsPage - 1) * 5)
             .select('productID', 'name', 'amount', 'cost', 'arrival')
-            .orderBy('arrival')
-            /*
+            .orderBy('dateArrival')
             .modify( function ( allProducts ){
                 if ( startDate && endDate ){
                     const date1 = new Date(startDate);
                     const date2 = new Date(endDate);
-                    allProducts.whereBetween('arrival', [date1.toLocaleString(), date2.toLocaleString()])
+                    allProducts.whereBetween('dateArrival', [date1.toLocaleString(), date2.toLocaleString()])
                 }
             });
-            */ 
            
         response.status(200).json({ allProjects, allSales, allWages, allProducts });
     }
