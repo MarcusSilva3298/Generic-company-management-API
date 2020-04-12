@@ -8,8 +8,9 @@ module.exports = {
         //const { filters } = request.params;
 
         const products = await connection('inventory')
-            .limit(10).offset((page - 1 ) * 10)
-            .select('name', 'mainCategory', 'amount', 'price', 'productID');
+            .limit(5).offset((page - 1 ) * 5)
+            .select('name', 'mainCategory', 'amount', 'price', 'productID')
+            .orderBy('name');
 
         const [ count ] = await connection('inventory').count();
 
@@ -20,16 +21,25 @@ module.exports = {
 
     //Create product
     async create(request, response){
-        const { name, mainCategory, subCategory, amount, 
+        const { 
+            name, mainCategory, subCategory, amount, 
             price, cost, sendCompany, arrival
         } = request.body;
 
+        if ( arrival !== undefined ){
+            var date = new Date(arrival);
+        }else{
+            var date = new Date();
+        }
+
         const productID = crypto.randomBytes(4).toString('HEX');
 
-        await connection('inventory').insert({
-            productID, name, mainCategory, subCategory, amount, 
-            price, cost, sendCompany, arrival,
-        });
+        await connection('inventory')
+            .insert({
+                productID, name, mainCategory, subCategory, 
+                amount, price, cost, sendCompany, 
+                dateArrival: date.toLocaleDateString(), timeArrival: date.toLocaleTimeString()
+            });
 
         return response.json({ 'Product created! ID': productID })
     },
@@ -39,7 +49,9 @@ module.exports = {
         const { id } = request.params;
 
         const product = await connection('inventory')
-            .where('productID', id).select('*').first();
+            .where('productID', id)
+            .select('*')
+            .first();
 
         if ( product === undefined ){
             return response.status(404).json({ error: `ProductID ${ id } not found!` });
@@ -52,15 +64,22 @@ module.exports = {
     async update(request, response){
         const { id } = request.params;
 
-        const { name, mainCategory, subCategory, amount, 
+        const { 
+            name, mainCategory, subCategory, amount, 
             price, cost, sendCompany, arrival
         } = request.body;
 
+        const date = new Date(arrival);
+
         const product = await connection('inventory')
-            .where('productID', id).first().update({
+            .where('productID', id)
+            .select('productID')
+            .first()
+            .update({
                 name, mainCategory, subCategory, amount, 
-                price, cost, sendCompany, arrival,
-            }).select('productID');
+                price, cost, sendCompany, dateArrival: date.toLocaleDateString(),
+                timeArrival: date.toLocaleTimeString()
+            });
 
         if ( product ===  undefined ){
             return response.status(404).json({ error: `ProductID ${ id } not found!` });
@@ -74,14 +93,17 @@ module.exports = {
         const { id } = request.params;
 
         const product = await connection('inventory')
-            .where('productID', id).first().select('productID');
+            .where('productID', id)
+            .select('productID')
+            .first();
 
         if ( product === undefined ){
             return response.status(404).json({ error: `ProductID ${ id } not found!` });
         }
 
         await connection('inventory')
-            .where('productID', id).delete()
+            .where('productID', id)
+            .delete()
 
         return response.status(204);
     }

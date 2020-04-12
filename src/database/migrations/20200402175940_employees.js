@@ -4,7 +4,7 @@ exports.up = function(knex) {
         table.string('employeeID').primary();
         table.string('name').notNullable();
         table.string('job').notNullable();
-        table.string('wage').notNullable();
+        table.decimal('wage').notNullable();
         table.string('department').notNullable();
     })
 };
