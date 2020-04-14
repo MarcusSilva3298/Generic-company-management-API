@@ -1,6 +1,8 @@
 # Generic Company Management API 
 API that helps to automate some basic compnay managements functions and needs.
+
 A REST Client is required to use this API.
+
 API gate - localhost:8000
 
 ## API Instances
