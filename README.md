@@ -1,79 +1,91 @@
-Generic Company Management API its an API that helps to automate some basic compnay managements functions and needs.
+# Generic Company Management API 
+API that helps to automate some basic compnay managements functions and needs.
 A REST Client is required to use this API.
 API gate - localhost:8000
 
+## API Instances
 The API has four main instances so far, which are: INVENTORY, PROJECTS, EMPLOYEES, SALES and FINANCES.
 
-INVENTORY:
-    Controls the flow of products from the company's inventory, controlling the entry, exit and alteration of any products. A generic product have the following informations:
+#### INVENTORY:
+`/inventory`
+
+Controls the flow of products from the company's inventory, controlling the entry, exit and alteration of any products. A generic product have the following informations:
+    
+    {
+                   "productID": unique and indetification value,
+        (editable) "name": name of the product,
+        (editable) "mainCategory": main category of the product,
+        (editable)(nullable) "subCategory": sub category of the product,
+        (editable) "amount": amount of products in the invetory,
+        (editable) "price": selling price,
+        (editable) "cost": buying cost to the company,
+        (editable) "sendCompany": company that send the product,
+        (editable) "arrival": date and time of the product arrival, serves to form dateArrival and timeArrival
+    }
+ 
+#### EMPLOYEES:
+`/employees`
+
+Controls the company's employees. Allowing the creation, visualization, "firing" and updating all employees. A generic employee have the followings informations:
+
         {
-            "productID": unique and indetification value,
-            "name": name of the product,
-            "mainCategory": main category of the product,
-            "subCategory": sub category of the product,
-            "amount": amount of products in the invetory,
-            "price": selling price,
-            "cost": buying cost to the company,
-            "sendCompany": company that send the product,
-            "dateArrival": date of the product arrival,
-            "timeArrival": time of the product arrival
+                       "employeeID": unique and indetification value,
+            (editable) "name": employee's name,
+            (editable) "job": employee's position in the company,
+            (editable) "wage": employee's wage,
+            (editable) "department": departament that the employee works, 
+        }
+        
+
+#### PROJECTS:
+`/projects`
+
+Controls the company's projects. Allowing the creation, visualization, finalization and updating all projects. A generic project have the followings informations:
+
+        {
+                       "projectID": unique and indetification value,
+            (editable) "name": name of the project,
+            (editable) "description": descrição do projeto,
+            (editable) "startDate": start date of the project, 
+            (editable) "deadlineDate": expected project end date,
+            (editable) "clients": clients of the project,
+            (editable) "price": project price,
+            (editable) "cost": project costs to the company,
+            (editable) "profit": price - costs
+        }
+        
+        
+#### SALES:
+`/sales`
+
+Controls the company's sales. Allowing the creation, visualization, deleting and updating all sales. A generic sale have the followings informations:
+
+        {
+                       "saleID": unique and indetification value,
+            (editable) "productID": sold product's ID,
+                       "productName": sold product's name,
+            (editable) "amount": sold amount,
+            (editable) "discount": discount given to the product on sale,
+                       "income": price of the product * amount * discount,
+            (editable)(nullable) "client": customer who bought the product,
+            (editable) "date": date and time of the product sale, it serves to form saleDate and saleTime
+            
         }
 
-    To CREATE a product is necessary to go to  `/inventory` route with a POST method and insert:
-        {
-            "name": ,
-            "mainCategory": ,
-            "subCategory": ,
-            "amount": ,
-            "price": ,
-            "cost": ,
-            "sendCompany": ,
-            "arrival":
-        }
+#### FINANCES:
+`/finances`
 
-    To SEE ALL product is necessary to go to `/inventory?page=1` route with a GET method, the limit of itens/page its 5.
+Controls the company's finances. Allowing the visualization of every sale, project, wage of employee and products bought by the company. Every instance have its own pagination (salesPage, projectsPage, wagesPage, productsPage) and all itens can be filtered by date, once is provided a start (startDate) and end (endDate) date.
 
-    OBS: all of the following routes will need the ID of the product, the id can be found seeing all products and when a new product is created.
+#### Methods:
 
-    To SEE A product is necessary to go to `/inventory/:id` route with a GET method.
+All instances mentioned above, except for finances wich have only a `GET` method, have the following methods and follow this pattern:
 
-    To UPDATE a product is necessary to go to `/inventory/:id` route with a PUT method. The changeable informations of the product are the same of the creation of the product.
-
-    To DELETE a product is necessary to go to `/inventory/:id` route with a delete method.
-
-
-PROJECTS:
-    Controls the company's projects. Allowing the creation, visualization, finalization and updating all projects.
-        {
-            "projectID": unique and indetification value,
-            "name": name of the project,
-            "description": descrição do projeto,
-            "startDate": start date of the project,
-            "deadlineDate": expected project end date,
-            "clients": clients of the project,
-            "price": project price,
-            "cost": project costs to the company,
-            "profit": price - costs
-        }
-
-    To CREATE a product is necessary to go to  `/projects` route with a POST method and insert:
-        {
-            "name": ,
-            "description": ,
-            "startDate": ,
-            "deadlineDate": ,
-            "clients": ,
-            "price": ,
-            "cost": ,
-            "profit":
-        }
-
-    To SEE ALL projects is necessary to go to `/projects?page=1` route with a GET method, the limit of itens/page its 5.
-
-    OBS: all of the following routes will need the ID of the projects, the id can be found seeing all projects and when a new project is created.
-
-    To SEE A SPECIFIC project is necessary to go to `/projects/:id` route with a GET method.
-
-    To UPDATE a specific product is necessary to go to `/projects/:id` route with a PUT method. The changeable informations of the product are the same of the creation of the product.
-
-    To DELETE a product is necessary to go to `/projects/:id` route with a delete method.
+1. Basic route, wich is mentioned under the title of each instance:
+ * `GET`: serves to see all the itens created in each instance, only a few informations of each item can be seen to make a better visualization, it has a limit of 5 itens/page `/x?page=y`;
+ * `POST`: serves to create a new item in each instance, to create a item is necesseray to provide all the infomations makerd with `(editable)` that was quoted above in each instance;
+ 
+ 2. Especifc route, routes that needed the id of an item `/x/:id`:
+  * `GET`: serves to see all the informations of one specifc item;
+  * `PUT`: serves to update one specifc item, is necessary to provide all the previous editable information of the item and change only the informations that needed to be updated;
+  * `DELETE`: serves to delete one specifc item;
