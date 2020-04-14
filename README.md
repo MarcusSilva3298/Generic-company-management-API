@@ -3,7 +3,7 @@ API that helps to automate some basic compnay managements functions and needs.
 
 A REST Client is required to use this API.
 
-API gate - localhost:8000
+API gate - 8000
 
 ## API Instances
 The API has four main instances so far, which are: INVENTORY, PROJECTS, EMPLOYEES, SALES and FINANCES.
