@@ -4,7 +4,7 @@ exports.up = function(knex) {
         table.string('projectID').primary();
         table.string('name').notNullable();
         table.text('description').notNullable();
-        table.date('startDate').defaultTo(knex.fn.now());
+        table.date('startDate').notNullable();
         table.date('deadlineDate').notNullable();
         table.string('clients').notNullable();
         table.decimal('price').notNullable();
