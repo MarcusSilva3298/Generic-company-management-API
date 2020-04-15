@@ -63,7 +63,7 @@ routes.route('/sales/:id')
 
 //Financials Routes
 const FinancialsController = require('./controllers/FinancialsController');
-routes.route('/financials')
+routes.route('/finances')
     .get(FinancialsController.index)
 
 module.exports = routes;
