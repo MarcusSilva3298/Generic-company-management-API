@@ -6,13 +6,12 @@ exports.up = function(knex) {
         table.text('description').notNullable();
         table.date('startDate').notNullable();
         table.date('deadlineDate').notNullable();
-        table.string('clients').notNullable();
+        table.string('client').notNullable();
         table.decimal('price').notNullable();
         table.decimal('costs').notNullable();
     
         table.decimal('profit').notNullable();
     })
-    //output: "2020-04-03"
 };
 
 exports.down = function(knex) {

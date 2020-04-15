@@ -8,7 +8,7 @@ exports.up = function(knex) {
         table.integer('amount').notNullable();
         table.decimal('price').notNullable();
         table.decimal('cost').notNullable();
-        table.string('sendCompany').notNullable();
+        table.string('brand').notNullable();
         table.date('dateArrival').notNullable();
         table.datetime('timeArrival').notNullable();
   })
