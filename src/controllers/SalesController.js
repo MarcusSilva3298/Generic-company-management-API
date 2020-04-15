@@ -6,8 +6,9 @@ module.exports = {
         const { page = 1 } = request.query;
 
         const sales = await connection('sales')
-            .limit(10).offset((page - 1 ) * 10)
-            .select('saleId', 'productID', 'productName','amount','income', 'date');
+            .limit(5).offset((page - 1 ) * 5)
+            .select('saleId', 'productID', 'productName','amount','income', 'saleDate', 'saleTime')
+            .orderBy([{ column: 'saleDate', order: 'desc' }, { column: 'saleTime', order: 'desc' }]);
         
         const [ count ] = await connection('sales').count();
 
@@ -27,7 +28,9 @@ module.exports = {
         }
 
         const amnt = await connection('inventory')
-            .where('productID', productID).select('amount').first();
+            .where('productID', productID)
+            .select('amount')
+            .first();
         
         const stockAmount = amnt.amount;
 
@@ -39,22 +42,30 @@ module.exports = {
         
 
         const name = await connection('inventory')
-            .where('productID', productID).select('name').first();
+            .where('productID', productID)
+            .select('name')
+            .first();
+
         const productName = name.name;
 
         const price = await connection('inventory')
-            .where('productID', productID).select('price').first();
+            .where('productID', productID)
+            .select('price')
+            .first();
+
         const productUnitValue = price.price;
 
         const income = productUnitValue * amount * ( (100 - discount) / 100 ) ;
 
         await connection('sales').insert({
-            amount, discount, client, productID, productName, income, date: date.toLocaleString()
+            amount, discount, client, productID, productName, income, 
+            saleDate: date.toLocaleDateString(), saleTime: date.toLocaleTimeString()
         })
 
         
-        await connection('inventory').where('productID', productID)
-        .update('amount', NewAmount);
+        await connection('inventory')
+            .where('productID', productID)
+            .update('amount', NewAmount);
 
         return response.status(201).json(`Sold ${ amount } of ${ productName } by ${ income }`)
     },
@@ -63,28 +74,34 @@ module.exports = {
     async read(request, response){
         const { id } = request.params;
 
-        const sale = await connection('sales').where('saleID', id)
-            .select('*').first();
+        const sale = await connection('sales')
+            .where('saleID', id)
+            .select('*')
+            .first();
 
         if ( sale === undefined ){
             return response.status(404).json({ errror: `ProductID ${ id } not found!` })
         }
 
-        return response.json(sale);
+        return response.status(200).json(sale);
     },
     
     //Delete one sale
     async delete(request, response){
         const { id } = request.params;
 
-        const sale = await connection('sales').where('saleID', id)
-            .select('saleID').first();
+        const sale = await connection('sales')
+            .where('saleID', id)
+            .select('saleID')
+            .first();
 
         if ( sale === undefined ){
             return response.status(404).json({ error: `ProductID ${ id } not found!` })
         }
 
-        await connection('sales').where('saleID', id).delete();
+        await connection('sales')
+            .where('saleID', id)
+            .delete();
 
         return response.status(204);
     }

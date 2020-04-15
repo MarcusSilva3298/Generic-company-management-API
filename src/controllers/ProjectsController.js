@@ -7,30 +7,38 @@ module.exports = {
         const { page = 1 } = request.query;
 
         const projects = await connection('projects')
-            .limit(10).offset(( page - 1) * 10)
-            .select('name', 'projectID', 'profit', 'deadlineDate');
+            .limit(5).offset(( page - 1) * 5)
+            .select('projectID', 'name', 'profit', 'deadlineDate')
+            .orderBy('name');
 
         const [ count ] = await connection('inventory').count();
 
         response.header('X-Total-Projects', count['count(*)']);
 
-        return response.json(projects);
+        return response.status(200).json(projects);
     },
 
     //Create new project
     async create(request, response){      
-        const { name, description, startDate, deadlineDate, clients,
-            price, costs } = request.body;
+        const { 
+            name, description, startDate, deadlineDate, 
+            clients, price, costs 
+        } = request.body;
+
+        const strtDate = new Date(startDate);
+        const dlnDate = new Date(deadlineDate);
 
         const projectID = crypto.randomBytes(4).toString('HEX');
         const profit = price - costs;
 
-        await connection('projects').insert({
-            name, startDate, deadlineDate, clients, price, costs,
-            profit, description, projectID
+        await connection('projects')
+        .insert({
+            name, clients, description, price,
+            costs, projectID, profit, startDate: strtDate.toLocaleDateString(),
+            deadlineDate: dlnDate.toLocaleDateString()
         });
 
-        return response.json({ 'Project created! ID': projectID });
+        return response.status(201).json({ 'Project created! ID': projectID });
     },
 
     //Read one project
@@ -38,50 +46,62 @@ module.exports = {
         const { id } = request.params;
 
         const project = await connection('projects')
-            .where('projectID', id).select('*').first();
+            .where('projectID', id)
+            .select('*')
+            .first();
 
         if ( project === undefined ){
             return response.status(404).json({ error: `ProjectID ${ id } not found!` })
         }
 
-        return response.status(201).json(project)
+        return response.status(200).json(project)
     },
 
     //Update one project
     async update(request, response){
         const { id } = request.params;
 
-        const { name, description, startDate, deadlineDate, clients,
-            price, costs } = request.body;
+        const { 
+            name, description, startDate, deadlineDate, 
+            clients, price, costs 
+        } = request.body;
+
+        const strtDate = new Date(startDate);
+        const dlnDate = new Date(deadlineDate);
 
         const profit = price - costs;
 
         const project = await connection('projects')
-            .where('projectID', id).first().update({
-                name, startDate, deadlineDate, clients, price, costs,
-                profit, description
+            .where('projectID', id)
+            .first()
+            .update({
+                name, clients, description, price,
+                costs, profit, startDate: strtDate.toLocaleDateString(), 
+                deadlineDate: dlnDate.toLocaleDateString()
             })
 
-        if ( project === undefined ){
+        if ( project === 0 ){
             return response.status(404).json({ error: `ProjectID ${ id } not found!`})
         }
 
-        return response.status(201).json(`Product ${ id } updated!`)
+        return response.status(205).json(`Product ${ id } updated!`)
     },
 
     async delete(request, response){
         const { id } = request.params;
 
         const project = await connection('projects')
-            .where('projectID', id).first();
+            .where('projectID', id)
+            .first();
 
         if ( project === undefined ){
             return response.status(404).json({ error: `ProjectID ${ id } not found!`})
         }
 
         await connection('projects')
-            .where('projectID', id).delete()
+            .where('projectID', id)
+            .delete()
 
-        return response.status(204);
+        return response.redirect(200, '/projects');
     }
 }

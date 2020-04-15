@@ -15,7 +15,7 @@ module.exports = {
 
         response.header('X-Total-Products', count['count(*)']);
 
-        return response.json(employees);
+        return response.status(200).json(employees);
     },
 
     //Create new employee
@@ -29,7 +29,7 @@ module.exports = {
                 name, job, wage, department, employeeID
             });
 
-        return response.json({ 'Employee created! ID': employeeID})
+        return response.status(201).json({ 'Employee created! ID': employeeID})
     },
 
     //Read one employee
@@ -45,7 +45,7 @@ module.exports = {
             return response.status(404).json({ error: `EmployeeID ${ id } not found!` })
         }
 
-        return response.json(employee);
+        return response.status(200).json(employee);
     },
 
     //Upadte one employee
@@ -66,7 +66,7 @@ module.exports = {
             return response.json(404).json({ error: `EmployeeID ${ id } not found!` })
         }
 
-        return response.status(201).json(`Product ${ id } updated`)
+        return response.status(205).json(`Product ${ id } updated`)
     },
 
     //Delete one employee
@@ -86,6 +86,6 @@ module.exports = {
             .where('employeeID', id)
             .delete();
 
-        return response.status(204);
-    },
+        return response.redirect(200, '/employees');
+    }
 }

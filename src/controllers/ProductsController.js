@@ -9,14 +9,14 @@ module.exports = {
 
         const products = await connection('inventory')
             .limit(5).offset((page - 1 ) * 5)
-            .select('name', 'mainCategory', 'amount', 'price', 'productID')
+            .select('productID', 'name', 'mainCategory', 'amount', 'price')
             .orderBy('name');
 
         const [ count ] = await connection('inventory').count();
 
         response.header('X-Total-Products', count['count(*)']);
 
-        return response.json(products);
+        return response.status(200).json(products);
     },
 
     //Create product
@@ -41,7 +41,7 @@ module.exports = {
                 dateArrival: date.toLocaleDateString(), timeArrival: date.toLocaleTimeString()
             });
 
-        return response.json({ 'Product created! ID': productID })
+        return response.status(201).json({ 'Product created! ID': productID })
     },
 
     //Read one specific product
@@ -57,7 +57,7 @@ module.exports = {
             return response.status(404).json({ error: `ProductID ${ id } not found!` });
         }
         
-        return response.json(product);
+        return response.status(200).json(product);
     },
 
     //Update one product
@@ -73,7 +73,6 @@ module.exports = {
 
         const product = await connection('inventory')
             .where('productID', id)
-            .select('productID')
             .first()
             .update({
                 name, mainCategory, subCategory, amount, 
@@ -85,7 +84,7 @@ module.exports = {
             return response.status(404).json({ error: `ProductID ${ id } not found!` });
         }
 
-        return response.status(201).json(`Product ${ id } updated!`);
+        return response.status(205).json(`Product ${ id } updated!`);
     },
 
     //Delete one product
@@ -94,7 +93,6 @@ module.exports = {
 
         const product = await connection('inventory')
             .where('productID', id)
-            .select('productID')
             .first();
 
         if ( product === undefined ){
@@ -105,6 +103,6 @@ module.exports = {
             .where('productID', id)
             .delete()
 
-        return response.status(204);
+        return response.redirect(200, '/inventory');
     }
 }
