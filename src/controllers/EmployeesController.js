@@ -5,17 +5,29 @@ module.exports = {
     //List all employees
     async index(request, response){
         const { page = 1 } = request.query;
+        const { name, job, department } = request.query;
         
         const employees = await connection('employees')
             .limit(5).offset((page - 1 ) * 5 )
             .select('name', 'job', 'department', 'employeeID')
-            .orderBy('name', 'department');
+            .orderBy('name', 'department')
+            .modify( function ( employees ){
+                if ( name ){
+                    employees.where('name', name);
+                }
+                if ( job ){
+                    employees.where('job', job);
+                }
+                if ( department ){
+                    employees.where('department', department);
+                }
+            });
 
         const [ count ] = await connection('employees').count();
 
         response.header('X-Total-Products', count['count(*)']);
 
-        return response.status(200).json(employees);
+        return response.status(200).json({ Filters: 'name, job, department', employees });
     },
 
     //Create new employee

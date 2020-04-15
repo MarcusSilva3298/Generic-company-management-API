@@ -5,25 +5,36 @@ module.exports = {
     //List all products
     async index(request, response){
         const { page = 1 } = request.query;
-        //const { filters } = request.params;
+        const { name, mainCategory, brand } = request.query;
 
         const products = await connection('inventory')
             .limit(5).offset((page - 1 ) * 5)
-            .select('productID', 'name', 'mainCategory', 'amount', 'price')
-            .orderBy('name');
+            .select('productID', 'name', 'mainCategory', 'brand', 'amount', 'price')
+            .orderBy('name')
+            .modify( function ( products ){
+                if ( name ){
+                    products.where('name', name)
+                }
+                if ( mainCategory ){
+                    products.where('mainCategory', mainCategory)
+                }
+                if ( brand ){
+                    products.where('brand', brand)
+                }
+            });
 
         const [ count ] = await connection('inventory').count();
 
         response.header('X-Total-Products', count['count(*)']);
 
-        return response.status(200).json(products);
+        return response.status(200).json({ Filters: 'name, mainCategory, brand', products });
     },
 
     //Create product
     async create(request, response){
         const { 
             name, mainCategory, subCategory, amount, 
-            price, cost, sendCompany, arrival
+            price, cost, brand, arrival
         } = request.body;
 
         if ( arrival !== undefined ){
@@ -37,7 +48,7 @@ module.exports = {
         await connection('inventory')
             .insert({
                 productID, name, mainCategory, subCategory, 
-                amount, price, cost, sendCompany, 
+                amount, price, cost, brand, 
                 dateArrival: date.toLocaleDateString(), timeArrival: date.toLocaleTimeString()
             });
 

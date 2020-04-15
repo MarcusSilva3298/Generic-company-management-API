@@ -5,24 +5,41 @@ module.exports = {
     //List all projects
     async index(request, response){
         const { page = 1 } = request.query;
+        const { name, startDate, deadlineDate, client } = request.query
 
         const projects = await connection('projects')
             .limit(5).offset(( page - 1) * 5)
-            .select('projectID', 'name', 'profit', 'deadlineDate')
-            .orderBy('name');
+            .select('projectID', 'name', 'profit', 'client', 'startDate', 'deadlineDate')
+            .orderBy('name')
+            .modify( function ( projects ){
+                if ( name ){
+                    projects.where('name', name);
+                }
+                if ( client ){
+                    projects.where('client', client);
+                }
+                if ( startDate ){
+                    const date = new Date(startDate)
+                    projects.where('startDate', date.toLocaleDateString())
+                }
+                if ( deadlineDate ){
+                    const date1 = new Date(deadlineDate)
+                    projects.where('deadlineDate', date1.toLocaleDateString())
+                }
+            });
 
         const [ count ] = await connection('inventory').count();
 
         response.header('X-Total-Projects', count['count(*)']);
 
-        return response.status(200).json(projects);
+        return response.status(200).json({ Filters: 'name, client, startDate, deadlineDate', projects });
     },
 
     //Create new project
     async create(request, response){      
         const { 
             name, description, startDate, deadlineDate, 
-            clients, price, costs 
+            client, price, costs 
         } = request.body;
 
         const strtDate = new Date(startDate);
@@ -33,7 +50,7 @@ module.exports = {
 
         await connection('projects')
         .insert({
-            name, clients, description, price,
+            name, client, description, price,
             costs, projectID, profit, startDate: strtDate.toLocaleDateString(),
             deadlineDate: dlnDate.toLocaleDateString()
         });

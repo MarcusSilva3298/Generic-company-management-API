@@ -25,13 +25,13 @@ module.exports = {
             
         const allSales = await connection('sales')
             .limit(5).offset((salesPage - 1 ) * 5)
-            .select('saleID', 'productName', 'productID', 'amount', 'income', 'date')
-            .orderBy([{ column: 'date', order: 'desc' }, { column: 'income', order: 'desc' }])
+            .select('saleID', 'productName', 'productID', 'amount', 'income', 'saleDate')
+            .orderBy([{ column: 'saleDate', order: 'desc' }, { column: 'income', order: 'desc' }])
             .modify( function ( allSales ){
                 if ( startDate && endDate ){
                     const date1 = new Date(startDate);
                     const date2 = new Date(endDate);
-                    allSales.whereBetween('date', [date1.toLocaleString(), date2.toLocaleString()])
+                    allSales.whereBetween('saleDate', [date1.toLocaleString(), date2.toLocaleString()])
                 }
             });
         
@@ -43,7 +43,7 @@ module.exports = {
         
         const allProducts = await connection('inventory')
             .limit(5).offset((productsPage - 1) * 5)
-            .select('productID', 'name', 'amount', 'cost', 'arrival')
+            .select('productID', 'name', 'amount', 'cost', 'dateArrival ')
             .orderBy('dateArrival')
             .modify( function ( allProducts ){
                 if ( startDate && endDate ){
@@ -53,6 +53,6 @@ module.exports = {
                 }
             });
            
-        response.status(200).json({ allProjects, allSales, allWages, allProducts });
+        response.status(200).json({ Filters: 'time lapse - startDate & endDate', allProjects, allSales, allWages, allProducts });
     }
 }

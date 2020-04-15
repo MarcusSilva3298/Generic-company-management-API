@@ -4,17 +4,26 @@ module.exports = {
     //List all sales
     async index(request, response){
         const { page = 1 } = request.query;
+        const { productName, saleDate } = request.query;
 
         const sales = await connection('sales')
             .limit(5).offset((page - 1 ) * 5)
             .select('saleId', 'productID', 'productName','amount','income', 'saleDate', 'saleTime')
-            .orderBy([{ column: 'saleDate', order: 'desc' }, { column: 'saleTime', order: 'desc' }]);
+            .orderBy([{ column: 'saleDate', order: 'desc' }, { column: 'saleTime', order: 'desc' }])
+            .modify( function ( sales ){
+                if ( productName ){
+                    sales.where('productName', productName)
+                }
+                if ( saleDate ){
+                    sales.where('saleDate', saleDate)
+                }
+            });
         
         const [ count ] = await connection('sales').count();
 
         response.header('X-Total-Sales', count['count(*)']);
 
-        return response.status(200).json(sales);
+        return response.status(200).json({ Filters: 'productName, saleDate', sales });
     },
 
     //Create new sale
