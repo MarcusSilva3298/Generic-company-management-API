@@ -21,7 +21,7 @@ Controls the flow of products from the company's inventory, controlling the entr
         (editable) "amount": amount of products in the invetory,
         (editable) "price": selling price,
         (editable) "cost": buying cost to the company,
-        (editable) "sendCompany": company that send the product,
+        (editable) "brand": product brand,
         (editable) "arrival": date and time of the product arrival, serves to form dateArrival and timeArrival
     }
  
@@ -50,7 +50,7 @@ Controls the company's projects. Allowing the creation, visualization, finalizat
             (editable) "description": descrição do projeto,
             (editable) "startDate": start date of the project, 
             (editable) "deadlineDate": expected project end date,
-            (editable) "clients": clients of the project,
+            (editable) "client": client of the project,
             (editable) "price": project price,
             (editable) "cost": project costs to the company,
             (editable) "profit": price - costs
@@ -84,7 +84,7 @@ Controls the company's finances. Allowing the visualization of every sale, proje
 All instances mentioned above, except for finances wich have only a `GET` method, have the following methods and follow this pattern:
 
 1. Basic route, wich is mentioned under the title of each instance:
- * `GET`: serves to see all the itens created in each instance, only a few informations of each item can be seen to make a better visualization, it has a limit of 5 itens/page `/x?page=y`;
+ * `GET`: serves to see all the itens created in each instance, only a few informations of each item can be seen to make a better visualization and some of then can be filtered to improve search, it has a limit of 5 itens/page `/x?page=y`;
  * `POST`: serves to create a new item in each instance, to create a item is necesseray to provide all the infomations makerd with `(editable)` that was quoted above in each instance;
  
  2. Especifc route, routes that needed the id of an item `/x/:id`:
